@@ -1,0 +1,245 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.masary;
+
+import com.masary.common.CONFIG;
+import com.masary.database.manager.MasaryAdminSiteUserManager;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author Melad
+ */
+public class service extends HttpServlet {
+
+    private String ip;
+    private String uri;
+    private String action;
+    private String userid;
+    private String password;
+    String amount;
+    String msisdn;
+    private PrintWriter out;
+    String msg;
+    private String newPassword;
+
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    synchronized protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ip = request.getRemoteAddr();
+
+        response.setContentType("text/html;charset=UTF-8");
+        out = response.getWriter();
+//        if(!ip.equals("202.79.201.250"))
+//        {
+//            out.print("-5 You are not authorized to use this service ");
+//            return ;
+//        }
+        uri = request.getRequestURL().toString() + "?" + request.getQueryString();
+//        msg  += "Your Ip Address is: " + ip);
+//        msg  += "Url " + uri);
+        action = request.getParameter(CONFIG.PARAM_ACTION);
+        userid = request.getParameter(CONFIG.PARAM_USER_ID);
+        password = request.getParameter(CONFIG.PARAM_PASSWORD.toLowerCase());
+        msg = "";
+        if (action == null || userid == null || password == null) {
+            msg += "-1 ";
+            msg += " Bad request ";
+
+            logIt();
+            return;
+
+        }
+        if (!authenticate()) {
+
+            logIt();
+            return;
+        }
+
+        if (CONFIG.ACTION_GET_CREDITS.equalsIgnoreCase(action)) {
+       
+            try {
+
+                msg += "0 Your balance is " + MasaryAdminSiteUserManager.getInstance().getAgent(userid).getBalance() + " L.E.";
+            } catch (Exception ex) {
+                msg += "-100";
+                msg += "General Error Contact Masary Admin ";
+                Logger.getLogger(service.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+
+        } else if (CONFIG.ACTION_TOPUP.equalsIgnoreCase(action)) {
+            amount = request.getParameter(CONFIG.AMOUNT.toLowerCase());
+            msisdn = request.getParameter(CONFIG.PARAM_MSISDN.toLowerCase());
+
+            if (amount == null || msisdn == null) {
+                msg += "-1 ";
+                msg += " Bad request";
+                logIt();
+                return;
+            }
+            try {
+                if (Integer.parseInt(amount) <= 0) {
+                    msg += "-1 ";
+                    msg += " Amount must be grater than 0.";
+                    logIt();
+                    return;
+                }
+                if (Integer.parseInt(amount) <= 2) {
+                    msg += "-1 ";
+                    msg += " Amount must be grater than 2.";
+                    logIt();
+                    return;
+                }
+            } catch (NumberFormatException nfe) {
+                msg += "-1 ";
+                msg += " Amount must be number . ";
+                logIt();
+                return;
+            }
+            try {
+                if (MasaryAdminSiteUserManager.getInstance().getAgent(userid).getBalance() < Double.parseDouble(amount)) {
+                    msg += "-4 ";
+                    msg += "You don't have enough balance.";
+                    logIt();
+                    return;
+                }
+                if(msisdn.startsWith("0"))
+                {
+                    msisdn=msisdn.substring(1);
+                }
+                String result = MasaryAdminSiteUserManager.getInstance().transferCustomerTopUpAsService(userid, msisdn, amount);
+                System.out.println("Result : "+result);
+                System.out.println("MSG : "+msg);
+                msg += result;
+                System.out.println("MSG : "+msg);
+
+            } catch (Exception ex) {
+                Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                msg += "-100";
+                msg += "General Error Contact Masary Admin ";
+            }
+        } else if (CONFIG.ACTION_ORDER_CREDITS.equalsIgnoreCase(action)) {
+            amount = request.getParameter(CONFIG.AMOUNT.toLowerCase());
+            try {
+                MasaryAdminSiteUserManager.sendSMS(MasaryAdminSiteUserManager.getInstance().getAgent("1").getPhone(),
+                        "MSG from " + MasaryAdminSiteUserManager.getInstance().getAgent(userid).getName() + ". user id : " + userid + ". Please recharg my account in Masary with " + amount + " EGP. ");
+            } catch (Exception ex) {
+                Logger.getLogger(service.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (CONFIG.ACTION_CHANGE_PASSWORD.equalsIgnoreCase(action))
+        {
+            newPassword=request.getParameter(CONFIG.PARAM_NEW_PASSWORD);
+            if(newPassword==null)
+            {
+                msg += "-1 ";
+                msg += " Bad request Enter new password";
+                logIt();
+                return;
+
+            }
+            if(newPassword.length()<4 ||newPassword.length()>20)
+            {
+                msg+="-1 password length must be between 4 and 20 digits ";
+                logIt();
+                return;
+            }
+            try
+            {
+                MasaryAdminSiteUserManager.getInstance().updateUserAdmin(userid, newPassword);
+                msg+="0 Your password changed successfully ";
+
+
+            } catch (Exception ex)
+            {
+                msg += "-100";
+                msg += "General Error Contact Masary Admin ";
+                Logger.getLogger(service.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        logIt();
+    }
+
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException,
+            IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException,
+            IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+    synchronized boolean authenticate() {
+        String role = MasaryAdminSiteUserManager.getInstance().authenticateSiteUser(userid, password);
+        if (role.equals("-1")) {
+            msg += "-2 ";
+            msg += "Bad user ID or password";
+
+            return false;
+        } else if (role.equals("-2")) {
+            msg += "-3 ";
+            msg += "Your account currently not active Conntact Massary Admin for more information";
+            return false;
+        }
+        else if (role.equals("-4"))
+        {
+            msg += "-100 ";
+            msg += "General Error Contact Masary Admin ";
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+    private void logIt() {
+        out.println(msg);
+        MasaryAdminSiteUserManager.getInstance().writeLog(ip, uri, msg);
+    }
+}

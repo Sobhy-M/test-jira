@@ -1,0 +1,118 @@
+<%--
+    Document   : ViewTransaction.jsp
+    Created on : 06/05/2009, 11:09:49 Õ
+    Author     : Melad
+--%>
+
+<%@page contentType="text/html" pageEncoding="windows-1256"%>
+<%@page import="com.masary.common.CONFIG"%>
+<%@page import="java.text.DecimalFormat"%>
+<%@page import="com.masary.database.manager.MasaryAdminSiteUserManager"%>
+<%@page import="com.masary.database.dto.TransactionDTO"%>
+
+<link href="img/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<%
+        String role = (String) request.getSession().getAttribute(CONFIG.PARAM_ROLE);
+        if (role == null || !role.equals("2")) {
+            response.sendRedirect(CONFIG.APP_ROOT + CONFIG.PAGE_LOGIN);
+            return;
+        }
+        DecimalFormat myFormatter = new DecimalFormat("###,###.###  EGP");
+%>
+<%
+        String transId = (String) request.getAttribute(CONFIG.PARAM_Transaction_ID);
+        TransactionDTO trans;
+        try {
+            trans = MasaryAdminSiteUserManager.getInstance().getTransaction(transId);
+        } catch (Exception ex) {
+            request.setAttribute("ErrorMessage",
+                    "Detailed error code is:" + ex.getMessage());
+            response.sendRedirect(CONFIG.APP_ROOT + "error.jsp");
+            ex.printStackTrace();
+            return;
+        }
+%>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
+        <title>Transaction Report</title>
+    </head>
+    <BODY class="body">
+
+        <div class="main_body" align="center">
+            <div class="top_header" align="center" style="background:url(img/header_bg.png) no-repeat"><!-- Header div-->
+                <div class="top_banner">
+
+                    <IMG SRC="img/1x.jpg" WIDTH="646" ALT="" border="0">
+                    <jsp:include page="../img/welcome.jsp"></jsp:include>
+
+                </div>
+
+            </div>
+            <div class="content_body">
+                <div class="left_menu"><!-- left menu -->
+                    <a href="<%=CONFIG.APP_ROOT + "2.jsp"%>"><IMG SRC="img/home.png" ALT="" WIDTH=201 HEIGHT=26 border="0"></a><br>
+                    <jsp:include page="../img/menuList.jsp"></jsp:include>
+                    <a href="/topup/Web"><IMG SRC="img/logout.png" ALT="" WIDTH=201 HEIGHT=26 border="0"></a>
+                </div>
+                <div class="content_body"><br><br>
+                    <table >
+                        <tr>
+                            <th scope="col">Transaction Number</th>
+                            <td ><%=trans.getTransId()%> </td>
+                            <th rowspan="7">
+                                <form action="/topup/Web" method=post  name="admin_form" id="saveform">
+                                    <input type="hidden" name="action" value="<%= CONFIG.ACTION_AGENT_OPERATIONS%>">
+                                    <input type="hidden" value="View Customers" name="<%=CONFIG.PARAM_AGENT_BTN%>" />
+                                    <input type="submit" name="btnSubmit" tabindex="1"
+                                           value="OK" class="Btn">
+                                </form>
+                            </th>
+
+
+                        </tr>
+                        <tr>
+                            <th scope="col">From</th>
+                            <td><%=trans.getCustomerPayerName()%></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">To</th>
+                            <td><%=trans.getCustomerPayedName()%></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Type</th>
+                            <td><%=trans.getType()%></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Status</th>
+                            <td><%=trans.getStatus()%></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Amount</th>
+                            <td><%=myFormatter.format(trans.getAmount())%></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <td><%=trans.getDate()%></td>
+
+                        </tr>
+
+                    </table>
+                </div><!-- End of Table Content area-->
+            </div><!-- End content body -->
+
+
+
+            <div style="clear: both;">&nbsp;</div>
+
+            <div id="footer">© 2009 E-Masary.com </div>
+        </div><!-- End of Main body-->
+
+    </body>
+</html>
+
+
+

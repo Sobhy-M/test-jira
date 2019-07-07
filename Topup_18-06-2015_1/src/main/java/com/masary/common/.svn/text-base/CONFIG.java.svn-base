@@ -1,0 +1,166 @@
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.masary.common;
+
+/**
+ *
+ * @author Melad
+ */
+public interface CONFIG {
+
+    public static final int SUCCESS = 0;
+
+    // actions
+    public static final String ACTION_AUTHENTICATE = "ACTION_AUTHENTICATE";
+    public static final String ACTION_AUTHENTICATE_ANSWER = "ACTION_AUTHENTICATE_ANSWER";
+    public static final String ACTION_CUST_TRANSFER = "ACTION_CUST_TRANSFER";
+    public static final String ACTION_GET_LAST_TRANSACTIONS = "ACTION_GET_LAST_TRANSACTIONS";
+    public static final String ACTION_GET_ELECT_PILL = "ACTION_GET_ELECT_PILL";
+    public static final String ACTION_PAY_ELECT_PILL = "ACTION_PAY_ELECT_PILL";// parameters
+    public static final String ACTION_GET_MFI_PILL = "ACTION_GET_MFI_PILL";
+    public static final String ACTION_PAY_MFI_PILL = "ACTION_PAY_MFI_PILL";
+    public static final String ACTION_AUTHENTICATE_USER = "ACTION_AUTHENTICATE_USER";
+    public static final String ACTION_GET_VERSION = "ACTION_GET_VERSION";
+    public static final String ACTION_GET_JAR = "ACTION_GET_JAR";
+    public static final String ACTION_ADMIN_OPERATIONS="ACTION_ADMIN_OPERATIONS";
+    public static final String ACTION_AGENT_OPERATIONS="ACTION_AGENT_OPERATIONS";
+    public static final String ACTION_CUSTOMER_OPERATIONS="ACTION_CUSTOMER_OPERATIONS";
+    public static final String ACTION_SELL_CREADIT="ACTION_SELL_CREADIT";
+    public static final String ACTION_SELL_CUSTOMER_CREADIT="ACTION_SELL_CUSTOMER_CREADIT";
+    public static final String ACTION_ADD_AGENT ="ACTION_ADD_AGENT ";
+    public static final String ACTION_EDIT_AGENT ="ACTION_EDIT_AGENT";
+    public static final String ACTION_ASIGN_AGENT_BALANCE="ACTION_ASIGN_AGENT_BALANCE";
+    public static final String ACTION_MANAGE_AGENT_BALANCE="ACTION_MANAGE_AGENT_BALANCE";
+    public static final String ACTION_ADD_CUSTOMER="ACTION_ADD_CUSTOMER";
+    public static final String ACTION_ASIGN_CUSTOMER_BALANCE="ACTION_ASIGN_CUSTOMER_BALANCE";
+    public static final String ACTION_MANAGE_ROLES="ACTION_MANAGE_ROLES";
+    public static final String ACTION_MANAGE_AGENT="ACTION_MANAGE_AGENT";
+    public static final String ACTION_MANAGE_ADMIN="ACTION_MANAGE_ADMIN";
+    public static final String ACTION_MANAGE_ADMIN_BALANCE="ACTION_MANAGE_ADMIN_BALANCE";
+    public static final String ACTION_SERVICE_OPERATIONS="ACTION_SERVICE_OPERATIONS";
+    public static final String ACTION_ASIGN_CUSTOMER_BILL="ACTION_ASIGN_CUSTOMER_BILL";
+    public static final String ACTION_CUSTOMER_PAY_BILL="ACTION_CUSTOMER_PAY_BILL";
+    public static final String ACTION_CUSTOMER_RECHARGE="ACTION_CUSTOMER_RECHARGE";
+    public static final String ACTION_CUSTOMER_TOPUP="ACTION_CUSTOMER_TOPUP";
+
+    public static final String PARAM_MONTH="MONTH";
+    public static final String PARAM_YEAR="YEAR";
+    public static final String PARAM_ADD_AGENT="PARAM_ADD_AGENT";
+    public static final String PARAM_AGENT_ID="PARAM_AGENT_ID";
+    public static final String PARAM_AUTHENTICATED="PARAM_AUTHENTICATED";
+    public static final String PARAM_ADMIN_BTN="PARAM_ADMIN_BTN";
+    public static final String PARAM_ADMIN_PAGE="PARAM_ADMIN_PAGE";
+    public static final String PARAM_CUSTOMER_BTN="PARAM_CUSTOMER_BTN";
+    public static final String TransferToAnotherRep="Make Masary Money Transfer";
+    public static final String MerchantRecharge= "Make Etisalat Transfer";
+    public static final String CHECKCREIDET="„⁄—›… «·—’Ìœ »«·‘—ÌÕ…";
+    public static final String CustomerTopUp="Make Etisalat TopUp";
+    public static final String PARAM_AGENT_BTN="PARAM_AGENT_BTN";
+    public static final String PARAM_ACTION = "action";
+    public static final String PARAM_PIN = "PIN";
+    public static final String PARAM_PAYER_PIN = "PAYERPIN";
+    public static final String PARAM_PAYED_PIN = "PAYEDPIN";
+    public static final String PARAM_USERNAME = "USERNAME";
+    public static final String PARAM_USER_ID = "id";
+    public static final String PARAM_PASSWORD = "PASSWORD";
+    public static final String PARAM_NEW_PASSWORD = "newpassword";
+    public static final String PARAM_CONFIRM_PASSWORD="PARAM_CONFIRM_PASSWORD";
+    public static final String PARAM_MSISDN = "MSISDN";
+    public static final String PARAM_NAME = "NAME";
+    public static final String PARAM_PHONE = "PHONE";
+    public static final String PARAM_QUESTION = "QUESTION";
+    public static final String PARAM_ANSWER = "ANSWER";
+    public static final String PARAM_BALANCE = "BALANCE";
+    public static final String PARAM_CUSTOMER_ID="PARAM_CUSTOMER_ID";
+    public static final String PARAM_Transaction_ID = "TransID";
+    public static final String ASSIGN="ASSIGN";
+    public static final String MANAGE="MANAGE";
+    public static final String PAY="PAY";
+    public static final String ASSIGN_BILL="Assign bill";
+    public static final String DEACTIVATE="Deactivate";
+    public static final String ACTIVATE="Activate";
+
+    // status types
+    public static final String STATUS_TYPE_SUCCESS = "success";
+    public static final String STATUS_TYPE_ERROR = "error";
+    public static final String STATUS_TYPE_WARNING = "warn";
+
+    // status messages
+    public static final String STATUS_MESSAGE_SUCCESS = "Succeed";
+    public static final String STATUS_MESSAGE_ERROR = "Failed";
+    public static final String AMOUNT = "AMOUNT";
+    public static final String PILLDATE = "PILLDATE";
+
+
+    // response types
+    public static final String PARAM_RESPONSE_TYPE = "responsetype";
+    public static final String RESPONSE_TYPE_XML = "xml";
+
+    // application root
+    public static final String APP_ROOT = "/topup/";
+    public static final String VERSION = "VERSION";
+
+    //pages
+    public static final String PAGE_LOGIN = "Login.jsp";
+    public static final String PARAM_ROLE="ROLE";
+    public static final String PAGE_ADD_AGENT="admin/AddAgent.jsp";
+    public static final String PAGE_VIEW_AGENTS="admin/ViewAgents.jsp";
+    public static final String PAGE_VIEW_SERVICES="admin/ViewServices.jsp";
+    public static final String PAGE_ERRPR="error.jsp";
+    public static final String PAGE_ASSIGN_AGENTS="admin/AssignBalance.jsp";
+    public static final String PAGE_VIEW_TRANSACTION="admin/ViewTransaction.jsp";
+    public static final String PARAM_NEXT_PAGE="PARAM_NEXT_PAGE";
+    public static final String PAGE_VIEW_BANK_ACCOUNT="admin/ViewBankInformation.jsp";
+    public static final String PAGE_ADD_CUSTOMER="agent/AddCustomer.jsp";
+    public static final String PAGE_CUSTOMER_TRANSACTION="customer/CustomerTransaction.jsp";
+    public static final String PAGE_CUSTOMER_BILLS="customer/PayBill.jsp";
+    public static final String PAGE_VIEW_CUSTOMERS="agent/ViewCustomers.jsp";
+    public static final String PAGE_MANAGE_ACCOUNT="agent/ManagePage.jsp";
+    public static final String PAGE_MANAGE_CUSTOMER_ACCOUNT="customer/ManagePage.jsp";
+    public static final String PAGE_MANAGE_EDIT_AGENT="admin/ManageAgentEdit.jsp";
+    public static final String PAGE_MANAGE_SERVICE_ACCOUNT="service/billers/ManagePage.jsp";
+    public static final String PAGE_VIEW_AGENT_TRANSACTION="agent/ViewTransaction.jsp";
+    public static final String PAGE_VIEW_CUSTOMER_TRANSACTION="customer/ViewTransaction.jsp";
+    public static final String PAGE_ASSIGN_CUSTOMER="agent/AssignBalance.jsp";
+   // public static final String PAGE_VIEW_AGENT_ACCOUNT="agent/ViewAgentAccount.jsp";
+    public static final String PAGE_VIEW_AGENT_ACCOUNT="admin/ViewBankInformation.jsp";
+    public static final String PAGE_VIEW_CUSTOMER_ACCOUNT="customer/ViewAgentAccount.jsp";
+    public static final String PAGE_RECHARGE="service/etisalat/ReCharge.jsp";
+    public static final String PAGE_CUSTOMERTOPUP="service/etisalat/CustomerTopUp.jsp";
+    public static final String PAGE_CUSTOMERTOPUP_CONFIRMATION="service/etisalat/CustomerTopUpConfirmation.jsp";
+    public static final String PAGE_VIEW_SERVICE_ACCOUNT="service/billers/ViewAgentAccount.jsp";
+    public static final String PAGE_ADD_BILL="service/billers/AddBill.jsp";
+    public static final String PAGE_ASSIGN_CUSTOMER_BILL="service/billersAssignBill.jsp";;
+    public static final String PAGE_BAY_CREADET="service/etisalat/BayCredit.jsp";//"service/etisalat/NotImplemented.jsp";
+    public static final String PAGE_SELL_CREADET="service/etisalat/SellCredit.jsp";//"service/etisalat/NotImplemented.jsp";
+    public static final String PAGE_SELL_CREADET_CONFIRM="service/etisalat/SellCreditConfirmation.jsp";//"service/etisalat/NotImplemented.jsp";
+    public static final String PAGE_BAY_CREADET_CUSTOMER="service/etisalat/SellCustomerCredit.jsp";//"service/etisalat/NotImplemented.jsp";
+    public static final String PAGE_CHECKCREIDET="service/etisalat/CheckCredit.jsp";
+    public static final String PAGE_BAY_CREADET_CUSTOMER_CONFIRM="service/etisalat/SellCustomerCreditConfirmation.jsp";//"customer/NotImplemented.jsp";
+    public static final String FALSE="FALSE";
+    public static final String TRUE="TRUE";
+    public static final String NEWUSERSMS="Welcome To masary Electronic Payment";
+    public static final String NEWAGENTSMS="You are now a Masary Agent";
+    public static final String CONFIRM="CONFIRM";
+    public static final String MANAGE_ROLES="admin/ManageAgent.jsp";;
+    public static final String error="error";
+    public static  final String errorTransaction=" The Service is temporary unavailabele , Please try again later ";
+    public static final String  etisalatError="›‘·  «·⁄„·Ì…";
+    public static final String  etisalatError1="Œÿ√";
+    public static final String  etisalatDone=" „  «·⁄„·Ì… »‰Ã«Õ";
+    public static final String  etisalatError2="Service Not Available";
+    public static final String BadEtisaltCustomer="Customer not found";
+    public static final String PAGE_ADD_AGENT_CONFIRM="admin/AddAgentConfirmation.jsp";
+    public static final String PAGE_ADD_CUSTOMER_CONFIRM = "agent/AddCustomerConfirmation.jsp";
+    public static final String ACTION_GET_CREDITS="getbalance";
+    public static final String ACTION_ORDER_CREDITS="order";
+    public static final String ACTION_CHANGE_PASSWORD="changepassword";
+    public static final String ACTION_TOPUP="topup";
+    public static String PAGE_MANAGE_ACCOUNT_ADMIN = "admin/ManagePage.jsp";
+    public static String PAGE_MANAGE_BALANCE_ADMIN = "admin/ManageBalance.jsp";
+
+
+}

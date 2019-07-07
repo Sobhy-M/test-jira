@@ -1,0 +1,89 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.masary.database.dto;
+
+/**
+ *
+ * @author Melad
+ */
+public class TransactionDTO {
+    String transId;
+    String customerPayerName;
+    String customerPayedName;
+    double  amount;
+    String date;
+    String status;
+    String type;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public TransactionDTO(String transId, String customerPayerName, String customerPayedName, double  amount, String date,String status,String type) {
+        this.transId = transId;
+        this.customerPayerName = customerPayerName;
+        this.customerPayedName = customerPayedName;
+        this.amount = amount;
+        this.date = date;
+        this.status=status;
+        this.type=type;
+    }
+
+    public double  getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double  amount) {
+        this.amount = amount;
+    }
+
+    public String getCustomerPayedName() {
+        return customerPayedName;
+    }
+
+    public void setCustomerPayedName(String customerPayedName) {
+        this.customerPayedName = customerPayedName;
+    }
+
+    public String getCustomerPayerName() {
+        return customerPayerName;
+    }
+
+    public void setCustomerPayerName(String customerPayerName) {
+        this.customerPayerName = customerPayerName;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTransId() {
+        return transId;
+    }
+
+    public void setTransId(String transId) {
+        this.transId = transId;
+    }
+
+
+
+}

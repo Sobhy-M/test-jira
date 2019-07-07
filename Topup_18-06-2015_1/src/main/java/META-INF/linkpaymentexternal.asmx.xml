@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="Validate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillingNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PaymentCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ValidateResult" type="tns:ValidationResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ValidationResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="BillingAccountValidaity" type="tns:AccountValidaity" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserEmail" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="AccountValidaity">
+        <s:restriction base="s:string">
+          <s:enumeration value="ValidWalletNumber" />
+          <s:enumeration value="ValidTransactionNumber" />
+          <s:enumeration value="TransactionCommittedBefore" />
+          <s:enumeration value="WalletNumberNotFound" />
+          <s:enumeration value="TransactionNumberNotFound" />
+          <s:enumeration value="InvalidBillingNumber" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="InquireTransactionAmount">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillingNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PaymentCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InquireTransactionAmountResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InquireTransactionAmountResult" type="tns:TransactionResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="TransactionResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="TransactionGuid" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserTransactionInfo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ReceiptNo" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Status" type="tns:TransactionStatus" />
+          <s:element minOccurs="0" maxOccurs="1" name="Error" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="RequireRedirect" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="RedirectUrl" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:float" />
+          <s:element minOccurs="1" maxOccurs="1" name="TransactionID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsFirstCheck" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="TransactionStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="Pending" />
+          <s:enumeration value="Success" />
+          <s:enumeration value="Failed" />
+          <s:enumeration value="Expired" />
+          <s:enumeration value="Sent" />
+          <s:enumeration value="InsufficientBalance" />
+          <s:enumeration value="Canceled" />
+          <s:enumeration value="UserViewedPaymentPage" />
+          <s:enumeration value="Revoked" />
+          <s:enumeration value="PendingOnAuthorization" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="CommitTransaction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BillingNumber" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:decimal" />
+            <s:element minOccurs="0" maxOccurs="1" name="TransactionGuid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PaymentCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CommitTransactionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CommitTransactionResult" type="tns:TransactionResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidationResult" nillable="true" type="tns:ValidationResult" />
+      <s:element name="TransactionResult" nillable="true" type="tns:TransactionResult" />
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="ValidateSoapIn">
+    <wsdl:part name="parameters" element="tns:Validate" />
+  </wsdl:message>
+  <wsdl:message name="ValidateSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateResponse" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountSoapIn">
+    <wsdl:part name="parameters" element="tns:InquireTransactionAmount" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountSoapOut">
+    <wsdl:part name="parameters" element="tns:InquireTransactionAmountResponse" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionSoapIn">
+    <wsdl:part name="parameters" element="tns:CommitTransaction" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionSoapOut">
+    <wsdl:part name="parameters" element="tns:CommitTransactionResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateHttpGetIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateHttpGetOut">
+    <wsdl:part name="Body" element="tns:ValidationResult" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountHttpGetIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountHttpGetOut">
+    <wsdl:part name="Body" element="tns:TransactionResult" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionHttpGetIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="Amount" type="s:string" />
+    <wsdl:part name="TransactionGuid" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionHttpGetOut">
+    <wsdl:part name="Body" element="tns:TransactionResult" />
+  </wsdl:message>
+  <wsdl:message name="ValidateHttpPostIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ValidateHttpPostOut">
+    <wsdl:part name="Body" element="tns:ValidationResult" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountHttpPostIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InquireTransactionAmountHttpPostOut">
+    <wsdl:part name="Body" element="tns:TransactionResult" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionHttpPostIn">
+    <wsdl:part name="BillingNumber" type="s:string" />
+    <wsdl:part name="Amount" type="s:string" />
+    <wsdl:part name="TransactionGuid" type="s:string" />
+    <wsdl:part name="PaymentCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CommitTransactionHttpPostOut">
+    <wsdl:part name="Body" element="tns:TransactionResult" />
+  </wsdl:message>
+  <wsdl:portType name="LinkPaymentExternalSoap">
+    <wsdl:operation name="Validate">
+      <wsdl:input message="tns:ValidateSoapIn" />
+      <wsdl:output message="tns:ValidateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <wsdl:input message="tns:InquireTransactionAmountSoapIn" />
+      <wsdl:output message="tns:InquireTransactionAmountSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <wsdl:input message="tns:CommitTransactionSoapIn" />
+      <wsdl:output message="tns:CommitTransactionSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="LinkPaymentExternalHttpGet">
+    <wsdl:operation name="Validate">
+      <wsdl:input message="tns:ValidateHttpGetIn" />
+      <wsdl:output message="tns:ValidateHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <wsdl:input message="tns:InquireTransactionAmountHttpGetIn" />
+      <wsdl:output message="tns:InquireTransactionAmountHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <wsdl:input message="tns:CommitTransactionHttpGetIn" />
+      <wsdl:output message="tns:CommitTransactionHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="LinkPaymentExternalHttpPost">
+    <wsdl:operation name="Validate">
+      <wsdl:input message="tns:ValidateHttpPostIn" />
+      <wsdl:output message="tns:ValidateHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <wsdl:input message="tns:InquireTransactionAmountHttpPostIn" />
+      <wsdl:output message="tns:InquireTransactionAmountHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <wsdl:input message="tns:CommitTransactionHttpPostIn" />
+      <wsdl:output message="tns:CommitTransactionHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LinkPaymentExternalSoap" type="tns:LinkPaymentExternalSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Validate">
+      <soap:operation soapAction="http://tempuri.org/Validate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <soap:operation soapAction="http://tempuri.org/InquireTransactionAmount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <soap:operation soapAction="http://tempuri.org/CommitTransaction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="LinkPaymentExternalSoap12" type="tns:LinkPaymentExternalSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Validate">
+      <soap12:operation soapAction="http://tempuri.org/Validate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <soap12:operation soapAction="http://tempuri.org/InquireTransactionAmount" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <soap12:operation soapAction="http://tempuri.org/CommitTransaction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="LinkPaymentExternalHttpGet" type="tns:LinkPaymentExternalHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="Validate">
+      <http:operation location="/Validate" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <http:operation location="/InquireTransactionAmount" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <http:operation location="/CommitTransaction" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="LinkPaymentExternalHttpPost" type="tns:LinkPaymentExternalHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="Validate">
+      <http:operation location="/Validate" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InquireTransactionAmount">
+      <http:operation location="/InquireTransactionAmount" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitTransaction">
+      <http:operation location="/CommitTransaction" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LinkPaymentExternal">
+    <wsdl:port name="LinkPaymentExternalSoap" binding="tns:LinkPaymentExternalSoap">
+      <soap:address location="http://iteam.linkdev.com/CentralServices/LinkPaymentService/linkpaymentexternal.asmx" />
+    </wsdl:port>
+    <wsdl:port name="LinkPaymentExternalSoap12" binding="tns:LinkPaymentExternalSoap12">
+      <soap12:address location="http://iteam.linkdev.com/CentralServices/LinkPaymentService/linkpaymentexternal.asmx" />
+    </wsdl:port>
+    <wsdl:port name="LinkPaymentExternalHttpGet" binding="tns:LinkPaymentExternalHttpGet">
+      <http:address location="http://iteam.linkdev.com/CentralServices/LinkPaymentService/linkpaymentexternal.asmx" />
+    </wsdl:port>
+    <wsdl:port name="LinkPaymentExternalHttpPost" binding="tns:LinkPaymentExternalHttpPost">
+      <http:address location="http://iteam.linkdev.com/CentralServices/LinkPaymentService/linkpaymentexternal.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

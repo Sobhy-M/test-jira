@@ -1,0 +1,93 @@
+package com.masary.database.dto;
+
+import java.util.ArrayList;
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+/**
+ *
+ * @author Melad
+ */
+public class AgentDTO {
+
+    private String pin,  name,phone;
+    private double balance;
+    private boolean isActive;
+    ArrayList<String> roles;
+
+    public void addRole(String roleName) {
+        roles.add(roleName);
+    }
+
+    public AgentDTO() {
+        roles=new ArrayList<String>();
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public ArrayList<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(ArrayList<String> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public double  getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double  balance) {
+        this.balance = balance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    public boolean hasRole(String roleName)
+    {
+        for(int i=roles.size()-1;i>=0;i--)
+        {
+            if (roles.get(i).equals(roleName))
+                return true;
+        }
+        return false;
+    }
+}

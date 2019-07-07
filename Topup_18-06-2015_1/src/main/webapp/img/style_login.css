@@ -1,0 +1,130 @@
+
+
+body {color:blue}
+h4 {color:#3366EF}
+.log_in_text_box {
+    background: url(textbox_bg.png);
+    background-repeat: no-repeat;
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    width:220px;
+    height:27px;
+}
+
+#logo_text {
+
+text-align: left;
+
+color: #999999; /*color: #4CAFC6;*/
+
+
+
+}
+
+#logo {
+
+	text-align: left;
+
+	margin: 0 auto;
+
+	padding: 0;
+
+	width: 170px;
+
+	line-height: 24px;
+
+}
+
+.log_in_text_box_user {
+    background: url(user_bg.png);
+    background-repeat: no-repeat;
+    padding-left:30px;
+    padding-top:4px;
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    width:220px;
+    height:27px;
+}
+
+.log_in_text_box_pass {
+    background: url(pass_bg.png);
+    background-repeat: no-repeat;
+    padding-left:30px;
+    padding-top:4px;
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    width:220px;
+    height:27px;
+}
+
+.log_in_btn {
+    background: url(login_button_ar.png);
+    background-repeat: no-repeat;
+    width: 127px;
+    height: 40px;
+    border: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+.log_in_text_box_mobile {
+
+
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    /*width:220px;
+    height:27px;
+    */}
+
+.log_in_text_box_user_mobile {
+    /*padding-left:30px;*/
+    /*padding-top:4px;*/
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    /*width:220px;
+    height:27px;
+    */}
+
+.log_in_text_box_user_mobile {
+    /*padding-left:30px;*/
+    /*padding-top:4px;*/
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    /*width:220px;
+    height:27px;
+    */}
+
+.table_row {
+    
+    padding-top:4px;
+    border: 1px solid #EBEBEB;
+    color: #3366FF;
+    /*width:220px;
+    height:27px;
+    */}
+
+.log_in_btn_mobile {
+    /*	width: 127px;
+	height: 40px;
+    */	border: 0px;
+    color: #3366FF;
+}
+#footer {
+    clear: both;
+    padding-right: 5px;
+    text-align: right;
+    padding-top: 5px;
+    font-size: 11px;
+    background: url(line.png) top no-repeat;
+}
+A:link {text-decoration: none}
+A:visited {color: #1111ee; text-decoration:none}
+A:active {text-decoration: none}
+A:hover {text-decoration: underline; color: red;}

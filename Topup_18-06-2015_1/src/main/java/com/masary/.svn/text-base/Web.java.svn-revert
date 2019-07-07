@@ -1,0 +1,752 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.masary;
+
+import com.masary.common.CONFIG;
+import com.masary.database.manager.MasaryAdminSiteUserManager;
+import java.io.IOException;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author Melad
+ */
+public class Web extends HttpServlet {
+
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter(CONFIG.PARAM_ACTION);
+        //System.out.println(action);
+        String nextJSP = CONFIG.PAGE_LOGIN;
+
+        //Action Handling
+        if (CONFIG.ACTION_AUTHENTICATE_USER.equals(action)) {
+            String username = request.getParameter(CONFIG.PARAM_USERNAME);
+            String password = request.getParameter(CONFIG.PARAM_PASSWORD);
+            String role = MasaryAdminSiteUserManager.getInstance().authenticateSiteUser(username, password);
+            request.getSession().setAttribute(CONFIG.PARAM_ROLE, role);
+            request.getSession().setAttribute(CONFIG.PARAM_PIN, MasaryAdminSiteUserManager.id);
+            //System.out.println(role);
+            if (role.equals("-1")) {
+                {
+                    role = MasaryAdminSiteUserManager.getInstance().authenticateSiteAdmin(username, password);
+                    if (role.equals("-1")) {
+                        request.setAttribute(CONFIG.PARAM_AUTHENTICATED, CONFIG.FALSE);
+                    } else {
+                        nextJSP = role + ".jsp";
+                        request.getSession().setAttribute(CONFIG.PARAM_ROLE, role);
+                        request.getSession().setAttribute(CONFIG.PARAM_PIN, MasaryAdminSiteUserManager.id);
+                    }
+                }
+            } else {
+
+                if (role.equals("-2")) {
+                    request.setAttribute("ErrorMessage",
+                            "Your account currently not active Conntact Massary Admin for more information");
+                    nextJSP = CONFIG.PAGE_ERRPR;
+                } else {
+                    nextJSP = role + ".jsp";
+                    request.getSession().setAttribute(CONFIG.PARAM_ROLE, role);
+                    request.getSession().setAttribute(CONFIG.PARAM_PIN, MasaryAdminSiteUserManager.id);
+                }
+            }
+
+        } /**********************************************************************/
+        else {
+            if (CONFIG.ACTION_ADMIN_OPERATIONS.equals(action)) {
+                String btn = request.getParameter(CONFIG.PARAM_ADMIN_BTN);
+                if (btn.equals("Add Agent")) {
+                    nextJSP = CONFIG.PAGE_ADD_AGENT;
+                } else {
+                    if (btn.equals("View Agents")) {
+                        nextJSP = CONFIG.PAGE_VIEW_AGENTS;
+                    } else {
+                        if (btn.equals("View Services")) {
+                            nextJSP = CONFIG.PAGE_VIEW_AGENTS;
+                        } else {
+                            if (btn.equals("View Bank Account Information")) {
+                                //System.out.println(request.getParameter("custIdForAccInfo"));
+                                HttpSession session = request.getSession();
+                                session.setAttribute("custIdForAccSession", request.getParameter("custIdForAccInfo"));
+                                nextJSP = CONFIG.PAGE_VIEW_BANK_ACCOUNT;
+                            } else {
+                                if (btn.equals("Manage Account")) {
+                                    nextJSP = CONFIG.PAGE_MANAGE_ACCOUNT_ADMIN;
+                                } else {
+                                    if (btn.equals("Manage Balance")) {
+                                        nextJSP = CONFIG.PAGE_MANAGE_BALANCE_ADMIN;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+            } /**********************************************************************/
+            else {
+                if (CONFIG.ACTION_ADD_AGENT.equals(action)) {
+                    String username = request.getParameter(CONFIG.PARAM_USERNAME);
+                    String password = request.getParameter(CONFIG.PARAM_PASSWORD);
+                    String sQuestion = request.getParameter(CONFIG.PARAM_QUESTION);
+                    String sAnswer = request.getParameter(CONFIG.PARAM_ANSWER);
+                    String phone = request.getParameter(CONFIG.PARAM_MSISDN);
+                    String confirm = request.getParameter(CONFIG.CONFIRM);
+                    if (confirm != null) {
+                        nextJSP = CONFIG.PAGE_ADD_AGENT_CONFIRM;
+                        request.removeAttribute(CONFIG.CONFIRM);
+                    } else {
+                        String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                        try {
+                            if (username.equals("") || password.equals("") || sQuestion.equals("") || sAnswer.equals("")) {
+                                throw new Exception("Please Verify your data");
+                            }
+
+                            MasaryAdminSiteUserManager.getInstance().addAgent(id, username, password, phone, sQuestion, sAnswer);
+                            nextJSP = "1.jsp";
+                        } catch (Exception ex) {
+                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                            request.setAttribute("ErrorMessage",
+                                    "Error adding agent, detailed error code is:" + ex);
+                            nextJSP = CONFIG.PAGE_ERRPR;
+                        }
+                    }
+                } /********************************Update Agent**************************************/
+                else if (CONFIG.ACTION_EDIT_AGENT.equals(action)) {
+                    String pin = request.getParameter(CONFIG.PARAM_PIN);
+                    String name = request.getParameter(CONFIG.PARAM_NAME);
+                    String phone = request.getParameter(CONFIG.PARAM_PHONE);
+                    try {
+                        MasaryAdminSiteUserManager.getInstance().updateAgent(pin, name, phone);
+                        nextJSP = CONFIG.PAGE_VIEW_AGENTS;
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+//
+//                    String confirm = request.getParameter(CONFIG.CONFIRM);
+//                    if (confirm != null) {
+//                        nextJSP = CONFIG.PAGE_ADD_AGENT_CONFIRM;
+//                        request.removeAttribute(CONFIG.CONFIRM);
+//                    } else {
+//                        String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+//                        try {
+//                            if (username.equals("") || password.equals("") || sQuestion.equals("") || sAnswer.equals("")) {
+//                                throw new Exception("Please Verify your data");
+//                            }
+//
+//                            MasaryAdminSiteUserManager.getInstance().addAgent(id, username, password, phone, sQuestion, sAnswer);
+//                            nextJSP = "1.jsp";
+//                        } catch (Exception ex) {
+//                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+//                            request.setAttribute("ErrorMessage",
+//                                    "Error adding agent, detailed error code is:" + ex);
+//                            nextJSP = CONFIG.PAGE_ERRPR;
+//                        }
+//                }
+                    } /**********************************************************************/
+                else {
+                    if (CONFIG.ACTION_ASIGN_AGENT_BALANCE.equals(action)) {
+                        Enumeration e = request.getParameterNames();
+                        String name = null, agentId = null;
+                        try {
+                            while (e.hasMoreElements()) {
+                                agentId = (String) e.nextElement();
+                                name = request.getParameter(agentId);
+                                if (name.equals(CONFIG.ASSIGN)) {
+                                    break;
+                                }
+                                if (name.equals(CONFIG.MANAGE)) {
+                                    nextJSP = CONFIG.MANAGE_ROLES;
+                                    request.getSession().setAttribute(CONFIG.PARAM_AGENT_ID, agentId);
+                                    break;
+                                }
+                                if (name.equals(CONFIG.DEACTIVATE)) {
+                                    MasaryAdminSiteUserManager.getInstance().setAgentStatus(agentId, false);
+                                    nextJSP = CONFIG.PAGE_VIEW_AGENTS;
+                                    break;
+                                }
+                                if (name.equals(CONFIG.ACTIVATE)) {
+                                    MasaryAdminSiteUserManager.getInstance().setAgentStatus(agentId, true);
+                                    nextJSP = CONFIG.PAGE_VIEW_AGENTS;
+                                    break;
+                                }
+
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                            request.setAttribute("ErrorMessage",
+                                    "Detailed error code is:" + ex.getMessage());
+                            nextJSP = CONFIG.PAGE_ERRPR;
+                        }
+                        if (!(nextJSP.equals(CONFIG.PAGE_VIEW_AGENTS) || nextJSP.equals(CONFIG.MANAGE_ROLES))) {
+                            String balance = request.getParameter(CONFIG.PARAM_BALANCE);
+                            if (balance == null) {
+                                request.getSession().setAttribute(CONFIG.PARAM_AGENT_ID, agentId);
+
+                                nextJSP = CONFIG.PAGE_ASSIGN_AGENTS;
+                            } else {
+                                agentId = (String) request.getSession().getAttribute(CONFIG.PARAM_AGENT_ID);
+                                String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                try {
+                                    String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().addBalance(agentId, id, balance));
+                                    request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                    request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_VIEW_AGENTS);
+                                    nextJSP = CONFIG.PAGE_VIEW_TRANSACTION;
+                                } catch (Exception ex) {
+                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                    request.setAttribute("ErrorMessage",
+                                            "Detailed error code is:" + ex.getMessage());
+                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                }
+                            }
+                        }
+                    } /**********************************************************************/
+                    else {
+                        if (CONFIG.ACTION_AGENT_OPERATIONS.equals(action)) {
+                            String btn = request.getParameter(CONFIG.PARAM_AGENT_BTN);
+                            if (btn.equals("Add Customer")) {
+                                nextJSP = CONFIG.PAGE_ADD_CUSTOMER;
+                            } else {
+                                if (btn.equals("View Customers")) {
+                                    nextJSP = CONFIG.PAGE_VIEW_CUSTOMERS;
+                                } else {
+                                    if (btn.equals("Manage Agent Account")) {
+                                        nextJSP = CONFIG.PAGE_MANAGE_ACCOUNT;
+                                    } else {
+                                        if (btn.equals("View Transactions")) {
+                                            request.getSession().setAttribute("custIdForAccSession",  request.getSession().getAttribute(CONFIG.PARAM_PIN));
+                                            nextJSP = CONFIG.PAGE_VIEW_AGENT_ACCOUNT;
+                                        }
+                                    }
+                                }
+                            }
+
+                        } /**********************************************************************/
+                        else {
+                            if (CONFIG.ACTION_CUSTOMER_OPERATIONS.equals(action)) {
+                                String btn = request.getParameter(CONFIG.PARAM_CUSTOMER_BTN);
+                                if (btn.equals("Money Transfer")) {
+                                    nextJSP = CONFIG.PAGE_CUSTOMER_TRANSACTION;
+                                } else {
+                                    if (btn.equals("Bills Payment")) {
+                                        nextJSP = CONFIG.PAGE_CUSTOMER_BILLS;
+                                    } else {
+                                        if (btn.equals("Manage Customer Account")) {
+                                            nextJSP = CONFIG.PAGE_MANAGE_CUSTOMER_ACCOUNT;
+                                        } else {
+                                            if (btn.equals("View Transactions")) {
+                                                nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_ACCOUNT;
+                                            } else {
+                                                if (btn.equals("Recharge")) {
+                                                    nextJSP = CONFIG.PAGE_RECHARGE;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            } /**********************************************************************/
+                            else {
+                                if (CONFIG.ACTION_ADD_CUSTOMER.equals(action)) {
+                                    String username = request.getParameter(CONFIG.PARAM_USERNAME);
+                                    String password = request.getParameter(CONFIG.PARAM_PASSWORD);
+                                    String sQuestion = request.getParameter(CONFIG.PARAM_QUESTION);
+                                    String sAnswer = request.getParameter(CONFIG.PARAM_ANSWER);
+                                    String phone = request.getParameter(CONFIG.PARAM_MSISDN);
+                                    String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                    String confirm = request.getParameter(CONFIG.CONFIRM);
+                                    if (confirm != null) {
+                                        nextJSP = CONFIG.PAGE_ADD_CUSTOMER_CONFIRM;
+                                        request.removeAttribute(CONFIG.CONFIRM);
+                                    } else {
+                                        try {
+                                            if (username.equals("") || password.equals("") || sQuestion.equals("") || sAnswer.equals("") || phone.equals("")) {
+                                                throw new Exception("Please Verify your data");
+                                            }
+                                            MasaryAdminSiteUserManager.getInstance().addCustomer(id, username, password, phone, sQuestion, sAnswer);
+                                            nextJSP = "2.jsp";
+                                        } catch (Exception ex) {
+                                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                            request.setAttribute("ErrorMessage",
+                                                    "Error adding Customer, " + ex.getMessage());
+                                            nextJSP = CONFIG.PAGE_ERRPR;
+                                        }
+                                    }
+
+                                } /**********************************************************************/
+                                else {
+                                    if (CONFIG.ACTION_ASIGN_CUSTOMER_BALANCE.equals(action)) {
+                                        Enumeration e = request.getParameterNames();
+                                        String name = null, custId = null;
+                                        try {
+
+                                            while (e.hasMoreElements()) {
+                                                custId = (String) e.nextElement();
+                                                name = request.getParameter(custId);
+                                                if (name.equals(CONFIG.ASSIGN)) {
+                                                    break;
+                                                }
+                                                if (name.equals(CONFIG.MANAGE)) {
+                                                    request.getSession().setAttribute(CONFIG.PARAM_CUSTOMER_ID, custId);
+                                                    nextJSP = CONFIG.MANAGE_ROLES;
+                                                }
+
+                                                if (name.equals(CONFIG.DEACTIVATE)) {
+                                                    MasaryAdminSiteUserManager.getInstance().setAgentStatus(custId, false);
+                                                    nextJSP = CONFIG.PAGE_VIEW_CUSTOMERS;
+                                                }
+                                                if (name.equals(CONFIG.ACTIVATE)) {
+                                                    MasaryAdminSiteUserManager.getInstance().setAgentStatus(custId, true);
+                                                    nextJSP = CONFIG.PAGE_VIEW_CUSTOMERS;
+                                                }
+
+                                            }
+                                        } catch (SQLException ex) {
+                                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                            request.setAttribute("ErrorMessage",
+                                                    "Detailed error code is:" + ex.getMessage());
+                                            nextJSP = CONFIG.PAGE_ERRPR;
+                                        }
+                                        if (!(nextJSP.equals(CONFIG.PAGE_VIEW_AGENTS) || nextJSP.equals(CONFIG.MANAGE_ROLES))) {
+                                            String balance = request.getParameter(CONFIG.PARAM_BALANCE);
+                                            if (balance == null) {
+                                                request.getSession().setAttribute(CONFIG.PARAM_CUSTOMER_ID, custId);
+
+                                                nextJSP = CONFIG.PAGE_ASSIGN_CUSTOMER;
+                                            } else {
+                                                custId = (String) request.getSession().getAttribute(CONFIG.PARAM_CUSTOMER_ID);
+                                                String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                try {
+                                                    String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().addBalance(custId, id, balance));
+                                                    request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                    request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_VIEW_AGENTS);
+                                                    nextJSP = CONFIG.PAGE_VIEW_AGENT_TRANSACTION;
+                                                } catch (Exception ex) {
+                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                    request.setAttribute("ErrorMessage",
+                                                            "Detailed error  is :" + ex.getMessage());
+                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                }
+
+                                            }
+                                        }
+
+
+                                    } /**********************************************************************/
+                                    else {
+                                        if (CONFIG.ACTION_MANAGE_ADMIN.equals(action)) {
+                                            String password = request.getParameter(CONFIG.PARAM_PASSWORD);
+                                            String confirmPassword = request.getParameter(CONFIG.PARAM_CONFIRM_PASSWORD);
+                                            String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                            String role = (String) request.getSession().getAttribute(CONFIG.PARAM_ROLE);
+                                            try {
+                                                if (password.equals(confirmPassword)) {
+
+                                                    MasaryAdminSiteUserManager.getInstance().updateUserAdmin(id, password);
+                                                    nextJSP = role + ".jsp";
+                                                } else {
+                                                    throw new Exception("Password and confirmation doesn't match ");
+                                                }
+                                            } catch (Exception ex) {
+                                                Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                request.setAttribute("ErrorMessage",
+                                                        "Detailed error  is :" + ex.getMessage());
+                                                nextJSP = CONFIG.PAGE_ERRPR;
+                                            }
+
+                                        } /**********************************************************************/
+                                        else {
+                                            if (CONFIG.ACTION_MANAGE_AGENT.equals(action)) {
+                                                String password = request.getParameter(CONFIG.PARAM_PASSWORD);
+                                                String confirmPassword = request.getParameter(CONFIG.PARAM_CONFIRM_PASSWORD);
+                                                String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                String sQ = request.getParameter(CONFIG.PARAM_QUESTION);
+                                                String answer = request.getParameter(CONFIG.PARAM_ANSWER);
+                                                String role = (String) request.getSession().getAttribute(CONFIG.PARAM_ROLE);
+                                                try {
+                                                    if (password.equals(confirmPassword)) {
+
+                                                        MasaryAdminSiteUserManager.getInstance().updateUser(id, password, sQ, answer);
+                                                        nextJSP = role + ".jsp";
+                                                    } else {
+                                                        throw new Exception("Password and confirmation doesn't match ");
+                                                    }
+                                                } catch (Exception ex) {
+                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                    request.setAttribute("ErrorMessage",
+                                                            "Detailed error  is :" + ex.getMessage());
+                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                }
+
+                                            }/**********************************************************************/
+                                            else {
+                                                if (CONFIG.ACTION_MANAGE_ADMIN_BALANCE.equals(action)) {
+                                                    String balance = (String) request.getParameter(CONFIG.PARAM_BALANCE);
+                                                    String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                    String role = (String) request.getSession().getAttribute(CONFIG.PARAM_ROLE);
+                                                    try {
+                                                        if (Integer.parseInt(balance) > 0) {
+
+                                                            MasaryAdminSiteUserManager.getInstance().updateUserBalance(id, balance);
+                                                            nextJSP = role + ".jsp";
+                                                        } else {
+                                                            throw new Exception("Your Balance Can't Be Less Than (0). ");
+                                                        }
+                                                    } catch (Exception ex) {
+                                                        Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                        request.setAttribute("ErrorMessage",
+                                                                "Detailed error  is :" + ex.getMessage());
+                                                        nextJSP = CONFIG.PAGE_ERRPR;
+                                                    }
+
+
+                                                } /**********************************************************************/
+                                                else {
+                                                    if (CONFIG.ACTION_SERVICE_OPERATIONS.equals(action)) {
+                                                        String btn = request.getParameter(CONFIG.PARAM_AGENT_BTN);
+                                                        if (btn.equals("Manage Service Account")) {
+                                                            nextJSP = CONFIG.PAGE_MANAGE_SERVICE_ACCOUNT;
+                                                        } else {
+                                                            if (btn.equals("View Transactions")) {
+                                                                nextJSP = CONFIG.PAGE_VIEW_SERVICE_ACCOUNT;
+                                                            } else {
+                                                                if (btn.equals("Add Bills")) {
+                                                                    nextJSP = CONFIG.PAGE_ADD_BILL;
+                                                                }
+                                                            }
+                                                        }
+
+
+                                                    } else {
+                                                        if (CONFIG.ACTION_ASIGN_CUSTOMER_BILL.equals(action)) {
+                                                            Enumeration e = request.getParameterNames();
+                                                            String name = null, custId = null;
+                                                            while (e.hasMoreElements()) {
+                                                                custId = (String) e.nextElement();
+                                                                name = request.getParameter(custId);
+                                                                if (name.equals(CONFIG.ASSIGN_BILL)) {
+                                                                    break;
+                                                                }
+                                                            }
+                                                            String balance = request.getParameter(CONFIG.PARAM_BALANCE);
+                                                            if (balance == null) {
+                                                                request.getSession().setAttribute(CONFIG.PARAM_CUSTOMER_ID, custId);
+                                                                nextJSP = CONFIG.PAGE_ASSIGN_CUSTOMER_BILL;
+                                                            } else {
+                                                                custId = (String) request.getSession().getAttribute(CONFIG.PARAM_CUSTOMER_ID);
+                                                                String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                String month = (String) request.getParameter(CONFIG.PARAM_MONTH);
+                                                                String year = (String) request.getParameter(CONFIG.PARAM_YEAR);
+                                                                try {
+                                                                    MasaryAdminSiteUserManager.getInstance().addBill(custId, id, balance, month, year);
+                                                                    nextJSP = CONFIG.PAGE_ADD_BILL;
+                                                                } catch (Exception ex) {
+                                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                    request.setAttribute("ErrorMessage",
+                                                                            "Can't add bill with the same month ");
+                                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                                }
+
+                                                            }
+                                                        } else {
+                                                            if (CONFIG.ACTION_CUST_TRANSFER.equals(action)) {
+                                                                String id = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                String amount = request.getParameter(CONFIG.AMOUNT);
+                                                                String payedPin = request.getParameter(CONFIG.PARAM_PAYED_PIN);
+                                                                try {
+
+                                                                    String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().addBalance(payedPin, id, amount));
+                                                                    request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                    request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_VIEW_AGENTS);
+                                                                    nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_TRANSACTION;
+                                                                } catch (Exception ex) {
+                                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                    request.setAttribute("ErrorMessage",
+                                                                            "Detailed error  is :" + ex.getMessage());
+                                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                                }
+
+
+                                                            } else {
+                                                                if (CONFIG.ACTION_CUSTOMER_PAY_BILL.equals(action)) {
+                                                                    Enumeration e = request.getParameterNames();
+                                                                    String name = null, billId = null;
+                                                                    while (e.hasMoreElements()) {
+                                                                        billId = (String) e.nextElement();
+                                                                        name = request.getParameter(billId);
+                                                                        if (name.equals(CONFIG.PAY)) {
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    String custID = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                    try {
+
+                                                                        String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().payBill(custID, billId));
+                                                                        request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                        request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_CUSTOMER_BILLS);
+                                                                        nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_TRANSACTION;
+                                                                    } catch (Exception ex) {
+                                                                        Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                        request.setAttribute("ErrorMessage",
+                                                                                "Detailed error  is :" + ex.getMessage());
+                                                                        nextJSP = CONFIG.PAGE_ERRPR;
+                                                                    }
+
+                                                                } else {
+                                                                    if (CONFIG.ACTION_CUSTOMER_RECHARGE.equals(action)) {
+                                                                        request.setCharacterEncoding("UTF-8");
+                                                                        String btn = new String(request.getParameter(CONFIG.PARAM_CUSTOMER_BTN).getBytes("8859_1"), "UTF8");
+                                                                        //System.out.println(btn);
+                                                                        if (btn.equals(CONFIG.MerchantRecharge)) {
+                                                                            nextJSP = CONFIG.PAGE_BAY_CREADET_CUSTOMER;
+                                                                        } else if (btn.equals(CONFIG.TransferToAnotherRep)) {
+                                                                            nextJSP = CONFIG.PAGE_SELL_CREADET;
+                                                                        } else if (btn.equals(CONFIG.CustomerTopUp)) {
+                                                                            nextJSP = CONFIG.PAGE_CUSTOMERTOPUP;
+                                                                        } else if (btn.equals(CONFIG.CHECKCREIDET)) {
+                                                                            nextJSP = CONFIG.PAGE_CHECKCREIDET;
+                                                                        }
+
+
+
+                                                                    } else {
+                                                                        if (CONFIG.ACTION_SELL_CUSTOMER_CREADIT.equals(action)) {
+                                                                            try {
+                                                                                String custID = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                                String amount = request.getParameter(CONFIG.AMOUNT);
+                                                                                String msisdn = request.getParameter(CONFIG.PARAM_MSISDN);
+                                                                                if (MasaryAdminSiteUserManager.getInstance().getAgent(custID).getBalance() < Double.parseDouble(amount)) {
+                                                                                    throw new Exception("Error transfering money : You don't have enough balance ");
+                                                                                }
+                                                                                if (request.getParameter(CONFIG.CONFIRM) == null) {
+                                                                                    nextJSP = CONFIG.PAGE_BAY_CREADET_CUSTOMER_CONFIRM;
+                                                                                } else {
+                                                                                    request.removeAttribute(CONFIG.CONFIRM);
+                                                                                    try {
+                                                                                        String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().transferCredit(custID, msisdn, amount));
+                                                                                        if (transId.equals("-10")) {
+                                                                                            request.setAttribute("ErrorMessage", CONFIG.errorTransaction);
+                                                                                            nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                        } else {
+                                                                                            if (transId.equals("-9")) {
+                                                                                                request.setAttribute("ErrorMessage", CONFIG.BadEtisaltCustomer + "  Check mobile number");
+                                                                                                nextJSP = CONFIG.PAGE_ERRPR;
+
+                                                                                            } else {
+                                                                                                request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                                                request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_CUSTOMER_BILLS);
+                                                                                                nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_TRANSACTION;
+                                                                                            }
+                                                                                        }
+                                                                                    } catch (Exception ex) {
+                                                                                        Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                                        request.setAttribute("ErrorMessage", "Detailed error  is :" + ex.getMessage());
+                                                                                        nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                    }
+                                                                                }
+                                                                            } catch (Exception ex) {
+                                                                                request.setAttribute("ErrorMessage", "Detailed error  is :" + ex.getMessage());
+                                                                                nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                            }
+
+                                                                        } else {
+                                                                            if (CONFIG.ACTION_CUSTOMER_TOPUP.equals(action)) {
+                                                                                try {
+                                                                                    String custID = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                                    String amount = request.getParameter(CONFIG.AMOUNT);
+                                                                                    String msisdn = request.getParameter(CONFIG.PARAM_MSISDN);
+                                                                                    if (MasaryAdminSiteUserManager.getInstance().getAgent(custID).getBalance() < Double.parseDouble(amount)) {
+                                                                                        throw new Exception("Error transfering money : You don't have enough balance ");
+                                                                                    }
+                                                                                    if (request.getParameter(CONFIG.CONFIRM) == null) {
+                                                                                        nextJSP = CONFIG.PAGE_CUSTOMERTOPUP_CONFIRMATION;
+                                                                                    } else {
+                                                                                        request.removeAttribute(CONFIG.CONFIRM);
+                                                                                        try {
+                                                                                            String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().transferCustomerTopUp(custID, msisdn, amount));
+                                                                                            if (transId.equals("-10")) {
+                                                                                                request.setAttribute("ErrorMessage", CONFIG.errorTransaction);
+                                                                                                nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                            } else {
+                                                                                                if (transId.equals("-9")) {
+                                                                                                    request.setAttribute("ErrorMessage", CONFIG.BadEtisaltCustomer + "  Check mobile number");
+                                                                                                    nextJSP = CONFIG.PAGE_ERRPR;
+
+                                                                                                } else {
+                                                                                                    request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                                                    request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_CUSTOMER_BILLS);
+                                                                                                    nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_TRANSACTION;
+                                                                                                }
+                                                                                            }
+                                                                                        } catch (Exception ex) {
+                                                                                            Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                                            request.setAttribute("ErrorMessage", "Detailed error  is :" + ex.getMessage());
+                                                                                            nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                        }
+                                                                                    }
+                                                                                } catch (Exception ex) {
+                                                                                    request.setAttribute("ErrorMessage", "Detailed error  is :" + ex.getMessage());
+                                                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                                }
+
+                                                                            } else {
+                                                                                if (CONFIG.ACTION_SELL_CREADIT.equals(action)) {
+                                                                                    String agentId = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                                    String amount = request.getParameter(CONFIG.AMOUNT);
+                                                                                    String paiedPin = request.getParameter(CONFIG.PARAM_PAYED_PIN);
+                                                                                    if (amount.equals("") || paiedPin.equals("")) {
+                                                                                        request.setAttribute("ErrorMessage",
+                                                                                                "Please Complete all the input data ");
+                                                                                        nextJSP = CONFIG.PAGE_ERRPR;
+
+                                                                                    } else {
+                                                                                        if (request.getParameter(CONFIG.CONFIRM) == null) {
+                                                                                            nextJSP = CONFIG.PAGE_SELL_CREADET_CONFIRM;
+                                                                                        } else {
+                                                                                            request.removeAttribute(CONFIG.CONFIRM);
+                                                                                            try {
+
+                                                                                                String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().addBalance(paiedPin, agentId, amount));
+                                                                                                request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                                                request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_CUSTOMER_BILLS);
+                                                                                                nextJSP = CONFIG.PAGE_VIEW_CUSTOMER_TRANSACTION;
+                                                                                            } catch (Exception ex) {
+                                                                                                Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                                                request.setAttribute("ErrorMessage",
+                                                                                                        "Detailed error  is :" + ex.getMessage());
+                                                                                                nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                            }
+
+                                                                                        }
+                                                                                    }
+                                                                                } else {
+                                                                                    if (CONFIG.ACTION_MANAGE_ROLES.equals(action)) {
+                                                                                        Enumeration e = request.getParameterNames();
+                                                                                        List<String> roles = new ArrayList<String>();
+                                                                                        String roleName, roleValue;
+                                                                                        while (e.hasMoreElements()) {
+                                                                                            roleName = (String) e.nextElement();
+                                                                                            roleValue = request.getParameter(roleName);
+                                                                                            if (roleValue.equalsIgnoreCase("on")) {
+                                                                                                roles.add(roleName);
+                                                                                            }
+                                                                                        }
+
+                                                                                        String custID = (String) request.getSession().getAttribute(CONFIG.PARAM_CUSTOMER_ID);
+                                                                                        MasaryAdminSiteUserManager.getInstance().setRoles(custID, roles);
+                                                                                        nextJSP = CONFIG.PAGE_VIEW_CUSTOMERS;
+                                                                                    } else {
+
+                                                                                        if (CONFIG.ACTION_MANAGE_AGENT_BALANCE.equals(action)) {
+                                                                                            String edit = request.getParameter("btnEdit");
+                                                                                            if (edit == null) {
+                                                                                                String agentId = (String) request.getSession().getAttribute(CONFIG.PARAM_AGENT_ID);
+                                                                                                String parentID = (String) request.getSession().getAttribute(CONFIG.PARAM_PIN);
+                                                                                                try {
+                                                                                                    String transId = String.valueOf(MasaryAdminSiteUserManager.getInstance().resetBalance(parentID, agentId));
+                                                                                                    request.setAttribute(CONFIG.PARAM_Transaction_ID, transId);
+                                                                                                    request.setAttribute(CONFIG.PARAM_NEXT_PAGE, CONFIG.PAGE_VIEW_AGENTS);
+                                                                                                    nextJSP = CONFIG.PAGE_VIEW_TRANSACTION;
+                                                                                                } catch (Exception ex) {
+                                                                                                    Logger.getLogger(Web.class.getName()).log(Level.SEVERE, null, ex);
+                                                                                                    request.setAttribute("ErrorMessage",
+                                                                                                            "Detailed error  is :" + ex.getMessage());
+                                                                                                    nextJSP = CONFIG.PAGE_ERRPR;
+                                                                                                }
+                                                                                            } else {
+                                                                                                nextJSP = CONFIG.PAGE_MANAGE_EDIT_AGENT;
+                                                                                            }
+                                                                                        }
+
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/" + nextJSP);
+        dispatcher.forward(request, response);
+
+    }
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException,
+            IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException,
+            IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+    }
