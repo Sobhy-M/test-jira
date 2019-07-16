@@ -20,7 +20,7 @@ pipeline {
 
 
 			stage ('Build') {
-			setps {
+			steps {
 	        withMaven(mavenLocalRepo: '.repository') {
           
              
