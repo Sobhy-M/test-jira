@@ -11,7 +11,7 @@ pipeline {
             }
         }
 
-        stage (withMaven(mavenLocalRepo: '.repository')) 
+        stage (withMaven(mavenLocalRepo: '.repository')) {
             steps {
              
 				bat 'cd ./Topup_18-06-2015_1'
