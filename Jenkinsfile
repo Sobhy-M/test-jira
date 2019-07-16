@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools { 
-        maven 'Maven 3.3.9'  
+         
         jdk 'jdk8' 
     }
     stages {
@@ -16,7 +16,7 @@ pipeline {
 
         stage ('Build') {
             steps {
-                sh 'mvn -X -DskipTests clean package'
+                sh 'mvn -X -DskipTests -Dmaven.repo.local=.m2 clean package'
             }
         }
     }
