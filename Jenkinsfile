@@ -4,12 +4,14 @@ pipeline {
          
         jdk 'jdk8' 
     }
+	node {
     stages {
         stage ('Initialize') {
             steps {
                bat 'cd ./Topup_18-06-2015_1'
             }
         }
+		}
 	node{
 			stage ('Build') {
 			
