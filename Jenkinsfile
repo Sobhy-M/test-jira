@@ -1,25 +1,22 @@
 pipeline {
-    agent {
     agent any
-			tools { 
-					maven 'Maven 3.3.9' 
-					jdk 'jdk8'
-				  }
+    tools { 
+        maven 'Maven 3.3.9' 
+        jdk 'jdk8' 
     }
     stages {
-        stage('Build') {
+        stage ('Initialize') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                ''' 
             }
         }
-        stage('Test') {
+
+        stage ('Build') {
             steps {
-				
-            }
-        }
-        stage('Deliver') {
-            steps {
-                
+                sh 'mvn -X -DskipTests clean package'
             }
         }
     }
