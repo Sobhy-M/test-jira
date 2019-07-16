@@ -11,7 +11,7 @@ pipeline {
             }
         }
 	node{
-			stage ('Build')
+			stage ('Build') {
 			
 	        withMaven(mavenLocalRepo: '.repository') {
           
@@ -24,3 +24,5 @@ pipeline {
 		}
 
     }
+	
+	}
