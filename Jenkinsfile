@@ -11,8 +11,9 @@ pipeline {
             }
         }
 
-        stage ('Build') {
-            withMaven(mavenLocalRepo: '.repository') {
+        stage (withMaven(mavenLocalRepo: '.repository')) 
+			Steps{
+             {
 				bat 'cd ./Topup_18-06-2015_1'
                 bat 'mvn -f "./Topup_18-06-2015_1/pom.xml" -X -DskipTests  clean package'
             }
