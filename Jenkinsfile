@@ -13,7 +13,8 @@ pipeline {
 
         stage ('Build') {
             steps {
-                bat 'mvn -X -DskipTests  clean package'
+				bat 'cd ./Topup_18-06-2015_1'
+                bat 'mvn ./Topup_18-06-2015_1 -X -DskipTests  clean package'
             }
         }
     }
