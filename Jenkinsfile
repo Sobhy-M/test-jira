@@ -3,9 +3,11 @@ pipeline {
     tools { 
          
         jdk 'jdk8' 
+		
     }
-	node {  
 	stages {	
+
+
 
 
         stage ('Initialize') {
@@ -13,10 +15,10 @@ pipeline {
                bat 'cd ./Topup_18-06-2015_1'
             }
         }
-		}
-		}
-	node{
-	stages {
+		
+		
+
+
 			stage ('Build') {
 			
 	        withMaven(mavenLocalRepo: '.repository') {
@@ -27,8 +29,9 @@ pipeline {
             }
         
 		}
-		}
+		
 
-    }
+    
 	
+	}
 	}
