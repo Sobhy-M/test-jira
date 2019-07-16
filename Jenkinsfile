@@ -7,9 +7,7 @@ pipeline {
     stages {
         stage ('Initialize') {
             steps {
-                sh '''
-                    echo "M2_HOME = /mnt/c/users/Mostafa.sobhy/.m2"
-                '''
+                sh 'echo "M2_HOME = /mnt/c/users/Mostafa.sobhy/.m2"'
             }
         }
 
